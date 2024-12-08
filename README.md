@@ -1,5 +1,5 @@
 # Model
-The machine learning model comes in two features: crops classification and price prediction. The classification of crops using Artificial Neural Network (ANN) and the architecture of crops price prediction using Long-Short Term Memory (LSTM).
+The machine learning model comes in two features: crops classification and price prediction. The classification of crops using Dense Neural Network (ANN) and the architecture of crops price prediction using Recurrent Neural Network (RNN) and Long-Short Term Memory (LSTM).
 # Dataset
 ## Crops Classification
 Because of limitation of local dataset, we use open access Indian crops dataset from [Kaggle](https://www.kaggle.com/datasets/siddharthss/crop-recommendation-dataset) to trained the model. The dataset contains 22 crops category as a label.
