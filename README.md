@@ -13,8 +13,10 @@ Because of limitation of local dataset, we collect crops price data of each crop
 - Tensorflow 2.17
 - Tensorflow.keras
 - Pandas
+- Plotly
 - Matplotlib
 - Numpy
+- io
 - os
 - zip
 
