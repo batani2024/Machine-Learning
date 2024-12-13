@@ -37,12 +37,12 @@ tanaman_data = {
         'scaler': 'scaler_orange.pkl',
         'model':'best_orange_model.h5'
     },
-    'kacang_lentil': {
+    'kacang lentil': {
         'data': 'lentil_avg_price.xlsx', #masalah
         'scaler': 'scaler_lentil.pkl',
         'model':'best_lentil_model.h5'
     },
-    'kacang_lentil_hitam': {
+    'kacang lentil hitam': {
         'data': 'grouped_prices_blackgram.xlsx', #masalah
         'scaler': 'scaler_blackgram.pkl',
         'model':'best_blackgram_model.h5'
@@ -67,7 +67,7 @@ tanaman_data = {
         'scaler': 'scaler_mango.pkl',
         'model':'best_mango_model.h5'
     },
-    'melon_musk': {
+    'melon musk': {
         'data': 'melonmusk_avg_price.xlsx', #masalah
         'scaler': 'scaler_melonmusk.pkl',
         'model':'best_melonmusk_model.h5'
