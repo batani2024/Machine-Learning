@@ -4,97 +4,96 @@ import joblib
 from flask import Flask, jsonify, request
 import plotly.graph_objects as go
 import pandas as pd
-import requests
-from io import BytesIO
 from tensorflow.keras.metrics import MeanSquaredError, MeanAbsoluteError
 
 tanaman_data = {
     'anggur': {
-        'data': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSGOk1Dm2xn_GCIj1u8Wh_VBFmyEJQMuQlv_pP6HFFyHnnqkvipIcfhwrG8Yqkv4A/pub?output=xlsx',
+        'data': 'grape_avg_price.xlsx',
         'scaler': 'scaler_grape.pkl',
         'model':'best_grape_model.h5'
     },
     'apel': {
-        'data': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ3XzG8gdELVbmSBVFPtU5LW7FitIBnCBYPQQRyxEJvKlPXpkb6H08cQXkZzohsJw/pub?output=xlsx',
+        'data': 'grouped_prices_apple.xlsx',
         'scaler': 'scaler_apple.pkl',
         'model':'best_apple_model1.h5'
     },
     'delima': {
-        'data': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSgy18YB4C6zt3hlRvVEpH6F6ObO1NxKa1V0INc3WDthfMfuVilzxTyDKQ-IzjlOg/pub?output=xlsx',
+        'data': 'pomegranate_avg_price.xlsx',
         'scaler': 'scaler_pomegranate.pkl',
         'model':'best_pomegranate_model.h5'
     },
     'goni': {
-        'data': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTSwxoyeeukGDrc-375u0l-QDurCBCDYPcMC6UCT_xR-CuGQlYRd6IbWuL-PdF6IA/pub?output=xlsx',
+        'data': 'jute_avg_price.xlsx', #masalah
         'scaler': 'scaler_jute.pkl',
-        'model':'best_lentil_jute.h5'
+        'model':'best_jute_model.h5'
     },
     'jagung': {
-        'data': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRQKISrB0KM08IF9irqcGJBk2Xwd5_5N2-1yA7PSBgh0qorMDFaAXvzPDh_PIDaDQ/pub?output=xlsx',
+        'data': 'maize_avg_price.xlsx', 
         'scaler': 'scaler_maize.pkl',
         'model':'best_maize_model.h5'
     },
     'jeruk': {
-        'data': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTr22wUpMdzdeXXW888ZyMi0ln0Sd8Yw5WuZzDTTQ1-XKpUGEi0vt0wERuNgPNdeA/pub?output=xlsx',
+        'data': 'orange_avg_price.xlsx',
         'scaler': 'scaler_orange.pkl',
         'model':'best_orange_model.h5'
     },
     'kacang_lentil': {
-        'data': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSnLvxw69gSvBWCOH0qPi7ZroSVJMCwky_psL4V9Rd4Dsg-3mzsELbC8g27Uhk2Lg/pub?output=xlsx',
+        'data': 'lentil_avg_price.xlsx', #masalah
         'scaler': 'scaler_lentil.pkl',
         'model':'best_lentil_model.h5'
     },
     'kacang_lentil_hitam': {
-        'data': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR4UsWQnt1vZDLeXq8lDDSOXjUtgXw96haKFfkY_DJ-HRFI_JGiddyK7ssDUByt_w/pub?output=xlsx',
+        'data': 'grouped_prices_blackgram.xlsx', #masalah
         'scaler': 'scaler_blackgram.pkl',
         'model':'best_blackgram_model.h5'
     },
     'kapas': {
-        'data': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRTaDJ3xiEWZ0jxp-bOXUKfgERGweIAEP5xLaO4iJccuZGPu6G7l4MXoS8GZLi90g/pub?output=xlsx',
+        'data': 'grouped_prices_cotton.xlsx',
         'scaler': 'scaler_cotton.pkl',
         'model':'best_cotton_model.h5'
     },
     'kelapa': {
-        'data': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRaSzRmZr5Oa_8JGeiBw6d03E4w5RlBzvgdNJfYl0fIvfP2RWMevHFPrlaAm1HmRQ/pub?output=xlsx',
+        'data': 'grouped_prices_coconut.xlsx',
         'scaler': 'scaler_coconut.pkl',
         'model':'best_coconut_model.h5'
     },
     'kopi': {
-        'data': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTmxWYDy6Wr4rCw7EJFG05lgWLG-giD30fXdrHDKtEc9sib5I96uUsb_ASSzHe1Mw/pub?output=xlsx',
+        'data': 'grouped_prices_coffee.xlsx',
         'scaler': 'scaler_kopi.pkl',
         'model':'best_kopi_model.h5'
     },
     'mangga': {
-        'data': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQHpPhMrZQQONFW74AYoGe-POB8-Cic6NJ-LYYThV5e67uhBBxGGlHwvnTDxf66Dw/pub?output=xlsx',
+        'data': 'mango_avg_price.xlsx',
         'scaler': 'scaler_mango.pkl',
         'model':'best_mango_model.h5'
     },
     'melon_musk': {
-        'data': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRStYmZ2UydRN3LvI7QKedFu2O9kGoASNhWcNxeubj0oHUO9RRhNX3O8Zhupxt2PQ/pub?output=xlsx',
+        'data': 'melonmusk_avg_price.xlsx', #masalah
         'scaler': 'scaler_melonmusk.pkl',
         'model':'best_melonmusk_model.h5'
     },
     'padi': {
-        'data': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRpIvYM-V8Zf_xwcfUFhrbq6Qo7PjvAysTX703ouc6QzbFAq6o5nqz-eRcPRx5HFw/pub?output=xlsx',
+        'data': 'rice_avg_price.xlsx', #masalah
         'scaler': 'scaler_rice.pkl',
         'model':'best_rice_model.h5'
     },
     'pepaya': {
-        'data': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSgw9Bz8ywlTDrVSRlNEqECDeMvjIX6GQaEtPcOxZsJzdVElaYEuga7ZNUeaCkiIQ/pub?output=xlsx',
+        'data': 'papaya_avg_price.xlsx', #masalah
         'scaler': 'scaler_papaya.pkl',
         'model':'best_papaya_model.h5'
     },
     'pisang': {
-        'data': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRohW9P2U40CCI_6s7qvpI1NTagc_PFNEE-yKah7Optu0TlW-KXaoWM2SAr5f9GdQ/pub?output=xlsx',
+        'data': 'grouped_prices_banana.xlsx',
         'scaler': 'scaler_banana.pkl',
         'model':'best_banana_model.h5'
     },
     'semangka': {
-        'data': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQRmadnz2HF7fl3aOISE8Oq-afIu-YKMsbehtCGt02xvK4L2A-MnZJ33iivlMWkMg/pub?output=xlsx',
+        'data': 'watermelon_avg_price.xlsx',
         'scaler': 'scaler_watermelon.pkl',
         'model':'best_watermelon_model.h5'
-    },
+    }
 }
+
 model = None
 scaler = None
 
@@ -155,19 +154,20 @@ def forecast():
     for tanaman in tanaman_list:
         # Ensure the tanaman name exists in the dictionary
         if tanaman not in tanaman_data:
+            
+            results.append({'error': f'Data {tanaman} tidak ada'})
+            
             #return jsonify({'error': f'Tanaman name "{tanaman}" not found'}), 400
-            continue
+            #continue
+        else:
+            # Load the model and scaler for the selected tanaman
+            model = keras.models.load_model(tanaman_data[tanaman]['model'], custom_objects={'mse': MeanSquaredError(), 'mae': MeanAbsoluteError()})
+            scaler = joblib.load(tanaman_data[tanaman]['scaler'])
 
-        # Load the model and scaler for the selected tanaman
-        model = keras.models.load_model(tanaman_data[tanaman]['model'], custom_objects={'mse': MeanSquaredError(), 'mae': MeanAbsoluteError()})
-        scaler = joblib.load(tanaman_data[tanaman]['scaler'])
-
-        # Load the dataset from the provided URL
-        file_url = tanaman_data[tanaman]['data']
+            # Load the dataset from the provided URL
+            file = tanaman_data[tanaman]['data']
         try:
-            response = requests.get(file_url)
-            response.raise_for_status()
-            file = BytesIO(response.content)
+
             lastprice_df = pd.read_excel(file)
             lastprice_df = lastprice_df.set_index(lastprice_df.columns[0])
         except Exception as e:
